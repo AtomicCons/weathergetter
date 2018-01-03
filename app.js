@@ -7,8 +7,11 @@ var express         = require('express'),
     passportLM      = require('passport-local-mongoose'),
     passportlocal   = require('passport-local'),
     methodOverride  = require('method-override'),
+    request         = require('request'),
     morgan          = require('morgan'),
-    User            = require("./models/user")
+    User            = require("./models/user"),
+    weatherModel    = require("./models/weather"),
+    weatherAPI      = require("./apiK/keys.js")
     ;
 
 
@@ -43,9 +46,21 @@ app.get('/setup', function(req, res){
   res.render('setup')
 })
 app.get('/menu', function(req, res){
-  res.render('menu')
-})
+  let url = 'http://api.openweathermap.org/data/2.5/weather?zip=59936,us&appid='+weatherAPI+'&units=imperial';
+  request(url, function (err, response, body){
+    if(err){
+      console.log('error:', error);
+    } else {
+      console.log('body:', body)
+      let weather = JSON.parse(body);
+        console.log(weather)
+        weatherModel.create(weather);
+            res.render('menu');
 
+    }
+  })
+
+})
   app.post('/setup', function(req, res){
 console.log(req.body.username);
       User.create({username: req.body.username, password:req.body.password}, function(err, User){
@@ -57,6 +72,6 @@ console.log(req.body.username);
 
       })
 })
-
+console.log(weatherAPI);
 app.listen(port);
 console.log("up and running on port " + port);

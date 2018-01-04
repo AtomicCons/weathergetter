@@ -46,19 +46,7 @@ app.get('/setup', function(req, res){
   res.render('setup')
 })
 app.get('/menu', function(req, res){
-  let url = 'http://api.openweathermap.org/data/2.5/weather?zip=59936,us&appid='+weatherAPI+'&units=imperial';
-  request(url, function (err, response, body){
-    if(err){
-      console.log('error:', error);
-    } else {
-      console.log('body:', body)
-      let weather = JSON.parse(body);
-        console.log(weather)
-        weatherModel.create(weather);
-            res.render('menu');
 
-    }
-  })
 
 })
   app.post('/setup', function(req, res){
@@ -72,6 +60,36 @@ console.log(req.body.username);
 
       })
 })
-console.log(weatherAPI);
+//weather capture run every 15 minutes
+function weatherGetter(){
+  //current date-time
+  var currentdate = new Date();
+  var datetime =
+                   (currentdate.getMonth()+1)  + "/"
+                  + currentdate.getDate() + "/"
+                  + currentdate.getFullYear() + " @ "
+                  + currentdate.getHours() + ":"
+                  + currentdate.getMinutes() + ":"
+                  + currentdate.getSeconds();
+  const url = 'http://api.openweathermap.org/data/2.5/weather?zip=59936,us&appid='+weatherAPI+'&units=imperial';
+  request(url, function (err, response, body){
+    if(err){
+      console.log('error:', error);
+    } else {
+      console.log('starting get weather data at '+ datetime )
+      let weather = JSON.parse(body);
+        weatherModel.create(weather);
+        console.log('weather task finished.')
+    }
+  })
+};
+var minutes = 10, getterTime = minutes * 60 * 1000;
+weatherGetter();
+setInterval(weatherGetter, getterTime);
+
+
+
+
+
 app.listen(port);
 console.log("up and running on port " + port);

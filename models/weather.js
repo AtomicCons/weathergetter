@@ -1,11 +1,29 @@
 const mongoose    = require("mongoose");
+var currentdate = new Date();
+var mmddyyyy =
+           (currentdate.getMonth()+1)  + "/"
+          + currentdate.getDate() + "/"
+          + currentdate.getFullYear()
 
+var time = currentdate.getHours() + ":"
+            +  currentdate.getMinutes() + ":"
+            + currentdate.getSeconds();
 const weatherSchema = new mongoose.Schema({
-  date: {type: Date, default: Date.now},
+  datetime: {
+    date: {
+      type: String,
+      default: mmddyyyy
+    },
+    time: {
+      type: String,
+      default: time
+    }
+  },
+
   weather: [{
-        main: String,
-        description: String,
-        icon: String
+    main: String,
+    description: String,
+    icon: String
   }],
   main: {
     temp: Number,
@@ -19,7 +37,9 @@ const weatherSchema = new mongoose.Schema({
     speed: Number,
     direction: Number
   },
-  clouds: {all: Number}
+  clouds: {
+    all: Number
+  }
 
 })
 
